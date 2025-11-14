@@ -53,6 +53,106 @@ def replace_keywords(content):
     return content, changes
 
 
+def extract_freetext_section(content, file_path):
+    """
+    从内容中提取[FREETEXT]到最后的部分
+    """
+    # 使用正则表达式匹配[FREETEXT]到文件末尾的内容
+    pattern = r'(\[FREETEXT\].*)'
+    match = re.search(pattern, content, re.DOTALL)
+
+    if match:
+        freetext_content = match.group(1).strip()
+        print(f"  从 {file_path} 提取的 [FREETEXT] 到最后的内容:")
+        print(f"  --- 开始 ---")
+        print(freetext_content)
+        print(f"  --- 结束 ---")
+        return freetext_content
+    else:
+        print(f"  警告: 在 {file_path} 中未找到 [FREETEXT] 标记")
+        return None
+
+
+def find_ese_files(base_path):
+    """
+    在base_path及其子目录中查找所有的.ese文件
+    """
+    ese_files = {}
+
+    for ese_file in Path(base_path).rglob('*.ese'):
+        # 跳过Sectors目录中的文件
+        if 'Sectors' in str(ese_file):
+            continue
+
+        # 获取文件名（不含扩展名）
+        file_stem = ese_file.stem
+        ese_files[file_stem] = ese_file
+        print(f"找到源文件: {ese_file} -> {file_stem}")
+
+    return ese_files
+
+
+def append_freetext_to_ese_files(source_ese_files, target_sectors_dir, target_dirs):
+    """
+    将源.ese文件中的[FREETEXT]到最后的内容添加到目标.ese文件末尾
+    """
+    appended_count = 0
+
+    for dir_name in target_dirs:
+        target_ese_path = target_sectors_dir / dir_name / f"{dir_name}.ese"
+
+        # 检查目标.ese文件是否存在
+        if not target_ese_path.exists():
+            print(f"警告: 目标文件 {target_ese_path} 不存在")
+            continue
+
+        # 查找对应的源.ese文件
+        source_key = dir_name
+        if dir_name == 'FSS':
+            source_key = 'PRC'  # FSS 对应的源文件是 PRC.ese
+
+        if source_key in source_ese_files:
+            source_ese_path = source_ese_files[source_key]
+
+            try:
+                print(f"\n处理 {dir_name}.ese:")
+                print(f"  源文件: {source_ese_path}")
+                print(f"  目标文件: {target_ese_path}")
+
+                # 读取源.ese文件内容
+                source_encoding = detect_encoding(source_ese_path)
+                with open(source_ese_path, 'r', encoding=source_encoding) as f:
+                    source_content = f.read()
+
+                # 提取[FREETEXT]到最后的内容
+                freetext_content = extract_freetext_section(source_content, source_ese_path)
+
+                if freetext_content:
+                    # 读取目标.ese文件内容
+                    target_encoding = detect_encoding(target_ese_path)
+                    with open(target_ese_path, 'r', encoding=target_encoding) as f:
+                        target_content = f.read()
+
+                    # 将[FREETEXT]内容添加到文件末尾
+                    updated_content = target_content + '\n' + freetext_content
+
+                    # 写回目标文件，使用GBK编码
+                    with open(target_ese_path, 'w', encoding='gbk') as f:
+                        f.write(updated_content)
+
+                    appended_count += 1
+                    print(f"  成功将 [FREETEXT] 内容添加到 {target_ese_path} 末尾 (使用GBK编码保存)")
+                else:
+                    print(f"  警告: 源文件 {source_ese_path} 中未找到 [FREETEXT] 内容")
+
+            except Exception as e:
+                print(f"  处理文件 {target_ese_path} 时出错: {e}")
+        else:
+            print(f"警告: 未找到 {dir_name} 对应的源 ese 文件 (查找键: {source_key})")
+
+    return appended_count
+
+
 def extract_info_section(content, file_path):
     """
     从内容中提取[INFO]到[AIRPORT]之间的部分（不包括[AIRPORT]）
@@ -140,12 +240,12 @@ def update_sct_with_info(source_sct_files, target_sectors_dir, target_dirs):
                     if re.search(pattern, target_content, re.DOTALL):
                         updated_content = re.sub(pattern, replacement, target_content, flags=re.DOTALL)
 
-                        # 写回目标文件
-                        with open(target_sct_path, 'w', encoding=target_encoding) as f:
+                        # 写回目标文件，使用GBK编码
+                        with open(target_sct_path, 'w', encoding='gbk') as f:
                             f.write(updated_content)
 
                         updated_count += 1
-                        print(f"  成功更新 {target_sct_path} 的 [INFO] 部分")
+                        print(f"  成功更新 {target_sct_path} 的 [INFO] 部分 (使用GBK编码保存)")
                     else:
                         print(f"  警告: 目标文件 {target_sct_path} 中未找到 [INFO] 到 [AIRPORT] 的标记")
                 else:
@@ -217,11 +317,12 @@ def process_files():
                 else:
                     print("  未找到需要替换的关键词")
 
-                # 写回文件（使用相同编码）
-                with open(file_path, 'w', encoding=encoding) as f:
+                # 写回文件，使用GBK编码
+                with open(file_path, 'w', encoding='gbk') as f:
                     f.write(content)
 
                 processed_files += 1
+                print(f"  已使用GBK编码保存文件")
 
                 # 处理文件重命名和移动
                 file_stem = file_path.stem  # 获取文件名（不含扩展名）
@@ -257,7 +358,17 @@ def process_files():
     print(f"找到 {len(source_sct_files)} 个源.sct文件")
 
     # 更新目标sct文件
-    updated_count = update_sct_with_info(source_sct_files, sectors_dir, target_dirs)
+    updated_sct_count = update_sct_with_info(source_sct_files, sectors_dir, target_dirs)
+
+    # 添加[FREETEXT]内容到.ese文件末尾
+    print(f"\n--- 开始添加[FREETEXT]内容到.ese文件末尾 ---")
+
+    # 查找所有源.ese文件（在update.py同级目录及其子目录中，但不包括Sectors目录）
+    source_ese_files = find_ese_files(base_path)
+    print(f"找到 {len(source_ese_files)} 个源.ese文件")
+
+    # 更新目标.ese文件
+    appended_ese_count = append_freetext_to_ese_files(source_ese_files, sectors_dir, target_dirs)
 
     # 打印统计信息
     print(f"\n=== 处理完成 ===")
@@ -265,7 +376,8 @@ def process_files():
     print(f"成功处理: {processed_files}")
     print(f"重命名文件: {renamed_files}")
     print(f"移动文件: {moved_files}")
-    print(f"更新.sct文件的[INFO]部分: {updated_count}")
+    print(f"更新.sct文件的[INFO]部分: {updated_sct_count}")
+    print(f"添加[FREETEXT]内容到.ese文件末尾: {appended_ese_count}")
 
 
 def main():
