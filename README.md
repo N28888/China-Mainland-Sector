@@ -7,11 +7,9 @@ China-Mainland-sector开源扇区项目致力于提供免费、开源的 Euroscope 扇区以帮助来自
 
 如果您喜欢本扇区，欢迎您给扇区点点``Star``, 或者在下方赞赏我们，您的支持是我们更新的动力！
 
-------
-
 本扇区虽名为China-Mainland-sector开源扇区，但本质为AirAmaz-Sector的衍生物，按照[GPL-3.0 许可证](./LICENSE)进行开源处理。
 
-------
+
 
 ### 飞行情报区
 
@@ -39,15 +37,16 @@ China-Mainland-sector开源扇区项目致力于提供免费、开源的 Euroscope 扇区以帮助来自
 | ZWUQ       | AIRAC2511    |
 | ZYSH       | AIRAC2511    |
 
-------
+
 
 ### 前置要求
+
 1. 为保证扇区能够正常加载，您需要安装最新的 Microsoft Visual C++ (x86) 可再发行程序包版本: 
    - https://aka.ms/vs/17/release/vc_redist.x86.exe
 2. 同时您需要安装 DirectX Runtime 以支持我们的渲染库运行: 
    - https://www.microsoft.com/en-us/download/details.aspx?id=35
 
-------
+
 
 ### 包含插件
 
@@ -60,7 +59,7 @@ China-Mainland-sector开源扇区项目致力于提供免费、开源的 Euroscope 扇区以帮助来自
 | Compass for Euroscope(闭源) | [William He](https://github.com/Misaka-Nnnnq)                |
 | AirAmaz RenderPlugin(闭源)  | [William He](https://github.com/Misaka-Nnnnq)                |
 
-------
+
 
 ### 外部内容
 
@@ -70,7 +69,7 @@ China-Mainland-sector开源扇区项目致力于提供免费、开源的 Euroscope 扇区以帮助来自
 | TopSky Cursors      | [VATPRC](https://www.vatprc.net/)                            |
 | AircraftPerformance | [VATSIM](https://github.com/vatsimnetwork/euroscope-performance-data) |
 
-------
+
 
 ### 更新日志
 
@@ -78,7 +77,7 @@ China-Mainland-sector开源扇区项目致力于提供免费、开源的 Euroscope 扇区以帮助来自
 
 文章开头的注释由于本人在制作时没有及时察觉此问题，我们将在近期进行补全
 
-------
+
 
 ### 贡献者
 
@@ -94,9 +93,10 @@ China-Mainland-sector开源扇区项目致力于提供免费、开源的 Euroscope 扇区以帮助来自
 - [Zihan Wang]()
 - [Master Gui](https://github.com/supermastergui)
 
-------
+
 
 ### 声明
+
 本项目可能包含来源于公开互联网资源的数据或信息。
 
 所有此类内容均为其各自所有者的知识产权。
