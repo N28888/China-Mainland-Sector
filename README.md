@@ -17,8 +17,7 @@ China-Mainland-sector开源扇区项目致力于提供免费、开源的 Eurosco
 
 *注：此图转自https://www.vatprc.net/zh-cn/airspace/fir*
 
-> [!Note]
->
+> [!NOTE]
 > VATPRC对于情报区划分并不一定与真实世界中的情报区划分完全一致。
 >
 > 为避免争议，上述示意图仅为 VATPRC**主要**管辖范围。
